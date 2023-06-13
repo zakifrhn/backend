@@ -1,11 +1,13 @@
 const express = require('express')
 const route = express.Router()
 const ctrl = require('../controllers/ctrlSchedule')
+const authCheck = require('../middleware/authCheck')
 
 
+route.post('/insert', authCheck('admin'), ctrl.saveData);
+route.delete('/delete/:id', authCheck('admin'), ctrl.delData);
+route.put('/edit/:id', authCheck('admin'), ctrl.editData);
+// route.get('/', ctrl.getData);
+route.get('/', ctrl.fetchBy)
 
-route.post('/insert', ctrl.saveData);
-route.delete('/delete/:id', ctrl.delData);
-route.put('/edit/:id', ctrl.editData);
-route.get('/', ctrl.getData);
 module.exports = route

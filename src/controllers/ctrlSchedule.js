@@ -1,26 +1,27 @@
 const ctrl = {}
 const model = require('../models/modelSchedule')
+const respone = require('../utils/respon')
 
 ctrl.saveData = async (req,res) => {
     try {
         const {
+            id_movie, 
             location_user,
             price_movie,
             date_start,
             date_end,
             time_movie,
-            pick_cinema,
-            movie_id
+            pick_cinema
         } = req.body
 
         const result = await model.addSch({
+            id_movie, 
             location_user,
             price_movie,
             date_start,
             date_end,
             time_movie,
-            pick_cinema,
-            movie_id
+            pick_cinema
         })
         return res.status(200).json(result)
     } catch (error) {
@@ -30,9 +31,9 @@ ctrl.saveData = async (req,res) => {
 
 ctrl.delData = async (req,res) =>{
     try {
-        const schedule_id  = req.params.id
+        const id_schedule  = req.params.id
         //const { id_movie } = req.params.id
-        const result = await model.deleteSch({schedule_id})
+        const result = await model.deleteSch({id_schedule})
         return res.status(200).json(result)
     } catch (error) {
         console.log(error)
@@ -41,9 +42,9 @@ ctrl.delData = async (req,res) =>{
 
 ctrl.editData = async(req,res) => {
     try {
-        const schedule_id =  req.params.id
-        const {movie_id,updated_at} = req.body
-        const result = await model.editSch({schedule_id,movie_id,updated_at})
+        const id_schedule =  req.params.id
+        const {location_user, price_movie, updated_at} = req.body
+        const result = await model.editSch({id_schedule,location_user, price_movie, updated_at})
         return res.status(200).json(result)
     } catch (error) {
         console.log(error)
@@ -91,4 +92,21 @@ ctrl.getData = async (req,res) => {
     }
 }
 
+
+ctrl.fetchBy = async(req,res) =>{
+    try {
+        const params = {
+            page: req.query.page || 1,
+            limit: req.query.limit || 5,
+            orderBy: req.query.orderBy || 'created_at',
+            search: req.query.search
+        }
+
+        const result = await model.getBy(params)
+        return respone(res, 200, result)
+    } catch (error) {
+        console.log(error)
+        return respone(res, 500, error.message)        
+    }
+}
 module.exports = ctrl

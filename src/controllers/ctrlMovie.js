@@ -1,5 +1,7 @@
 const ctrl = {}
 const model = require('../models/modelMovie')
+const respone =  require('../utils/respon')
+
 
 ctrl.getData = async (req,res) => {
     try{
@@ -12,32 +14,11 @@ ctrl.getData = async (req,res) => {
 
 ctrl.saveData = async (req,res) => {
     try {
-        const {
-            title_movie, 
-            genre_movie,  
-            release_date,  
-            directed_by, 
-            duration,
-            casts_movie,
-            image_movie, 
-            synopsis_movie ,
-            date_user,
-            kota_user
-        } = req.body
-
-        const result = await model.addMovie({
-            title_movie, 
-            genre_movie,  
-            release_date,  
-            directed_by, 
-            duration,
-            casts_movie,
-            image_movie, 
-            synopsis_movie ,
-            date_user,
-            kota_user
-        })
-        return res.status(200).json(result)
+        if(req.file !== undefined){
+            req.body.image_movie = req.file.path
+        }    
+        const result = await model.addMovie(req.body)
+        return respone(res,200,result)
     } catch (error) {
         console.log(error)
     }
@@ -56,9 +37,18 @@ ctrl.delData = async (req,res) =>{
 
 ctrl.editData = async(req,res) => {
     try {
-        const id_movie = req.params.id;
-        const {title_movie, date_user,kota_user,updated_at} = req.body
-        const result = await model.editMovie({id_movie, title_movie, date_user,kota_user,updated_at})
+        if(req.file !== undefined){
+            req.body.image_movie = req.file.path
+        }
+
+        const id_movie = req.params.id
+        const {
+            title_movie,
+            image_movie,
+            synopsis_movie, 
+            updated_at
+        } = req.body
+        const result = await model.editMovie({id_movie,title_movie,image_movie,synopsis_movie,updated_at})
         return res.status(200).json(result)
     } catch (error) {
         console.log(error)
@@ -85,6 +75,24 @@ ctrl.sortName = async(req,res) => {
         return res.status(200).json(result)
     } catch (error) {
         console.log(error)
+    }
+}
+
+
+ctrl.fetchBy = async(req,res) =>{
+    try {
+        const params = {
+            page: req.query.page || 1,
+            limit: req.query.limit || 5,
+            orderBy: req.query.orderBy || 'created_at',
+            search: req.query.search
+        }
+
+        const result = await model.getBy(params)
+        return respone(res, 200, result)
+    } catch (error) {
+        console.log(error)
+        return respone(res, 500, error.message)        
     }
 }
 
