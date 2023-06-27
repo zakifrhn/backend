@@ -7,6 +7,7 @@ const jwt = require('../utils/jwt')
 ctrl.login = async (req,res) => {
     try {
         const passDb = await model.getByUser(req.body.username)
+        console.log(passDb)
 
         if(passDb.length <= 0){
             return respone(res, 401, 'username tidak terdaftar')
@@ -16,11 +17,13 @@ ctrl.login = async (req,res) => {
         const check = await bcrypt.compare(passUser, passDb[0].pass)
 
         if(check){
-            const token = jwt.genToken(req.body.username)
+            const token = jwt.genToken({username: req.body.username, roles: passDb[0].roles, user_id: passDb[0].id_user})
             return respone(res,200, {
                 message: 'Token created',
                 token
              })
+        }else if(!passDb[0].verify){
+            return respone(res, 401, 'Your email has not been verified. Please click on resend')
         }else{
             return respone(res, 401, 'password salah')
         }
@@ -30,54 +33,20 @@ ctrl.login = async (req,res) => {
     }
 }
 
-// ctrl.checkRole = async(req,res,next) => {
-//     if(req.user){
-//         if(req.user.role == 'user'){
-//             next()
-//         }else{
-//             res.status(403).send('Forbidden');
-//         }
-//     }else{
-//         return (res, 401, error.message)
-//     }
-// }
+ctrl.verifyEmail = (req, res) => {
+    const { token } = req.params
 
-//version ini webdesimplified
-// let refreshTokens = []
+    jwt.verify(token, 'ourSecretKey', function(err, decoded) {
+        if (err) {
+            console.log(err);
+            res.send(`Email verification failed, possibly the link is invalid or expired`);
+        }
+        else {
+            res.send("Email verifified successfully");
+        }
+    });
+}
 
-// ctrl.refreshToken = async(req,res) => {
-//     const refreshToken = req.body.token
-//     if (refreshToken == null) return respone(res, 401, error.message)
-//     if (!refreshTokens.includes(refreshToken)) return respone(res, 401, error.message)
-//     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-//     if (err) return res.sendStatus(403)
-//     const accessToken = generateAccessToken({ name: user.name })
-//     res.json({ accessToken: accessToken })
-//   })
-// }
-
-// ctrl.deleteToken =  async(req,res) => {
-//     refreshTokens = refreshTokens.filter(token => token !== req.body.token)
-//     return respone(res, 200)
-// }
-
-// ctrl.loginTokens = async(req,res) =>{
-
-// }
-
-// version other
-// ctrl.lognTokens =  async( req, res ) =>{
-//     const {username, pass} = req.body
-//     if(username == 'test' && pass == 'test123'){
-//         const user = {username: 'test'}
-//         const accessToken =  jwt.tokenAdmin(user)
-//         const refreshToken = jwt.generateRefreshToken(user)
-        
-//         res.json({accessToken, refreshToken})
-//     }else{
-//         respone(res, 401)
-//     }
-// }
 
 // Route untuk pembaharuan token akses
 ctrl.refreshTokenize =  (req,res) =>{

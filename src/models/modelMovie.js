@@ -2,30 +2,6 @@ const db = require('../config/db')
 const model = {}
 const escape = require('pg-format')
 
-// model.createProduct = () =>{
-//     return new Promise ((resolve, rejected) => {
-//         db.query(`CREATE TABLE public.movie(	
-//             movie_id SERIAL primary key,
-//             title_movie VARCHAR not NULL,
-//             genre_movie VARCHAR not NULL, 
-//             release_date VARCHAR not NULL, 
-//             directed_by VARCHAR not NULL,
-//             duration varchar not NULL,
-//             casts_movie ,
-//             image_movie varchar, 
-//             synopsis_movie TEXT not NULL,
-//             date_user DATE not NULL,
-//             kota_user VARCHAR not NULL, 
-//             created_at TIMESTAMP not NULL,
-//             updated_at TIMESTAMP);`)
-//         .then(res =>{
-//             resolve(res.rows)
-//         }).catch(er => {
-//             rejected(er)
-//         })
-//     })
-// }
-
 
 model.addMovie = ({
     title_movie, 
@@ -37,7 +13,6 @@ model.addMovie = ({
     synopsis_movie, 
     date_user, 
     kota_user,
-    // id_movie, id_genre 
 }) => {
     return new Promise((resolve,rejected) => {
         db.query (`INSERT INTO public.movie (    
@@ -60,9 +35,6 @@ model.addMovie = ({
             synopsis_movie ,
             date_user,
             kota_user ])
-            // .then(() =>{
-            //     return db.query(`INSERT INTO public.bridge_movie_genre (id_movie, id_genre) VALUES ($1, $2)`, [id_movie, id_genre]);
-            // })
         .then(() => {
             resolve('Data Succesfully Added! ')
         }).catch((error) => {
@@ -76,15 +48,7 @@ model.deleteMovie = ({id_movie}) =>{
     return new Promise((resolve,rejected) => {
         db.query('DELETE FROM public.movie WHERE id_movie = $1', [id_movie])
         .then(() => {
-            
-            // resolve(res.status(201).send("Data berhasil di hapus"))
-            
             resolve("Data Succesfully Deleted!")
-
-            // resolve(res.status(200).json({
-            //     success: true,
-            //     messaage: 'berhasil Hapus data'
-            // }))
         }).catch((error) => {
             rejected("Failed to deleted the data" + error)
         })
@@ -141,19 +105,6 @@ model.sortNameRelease = () => {
         })
     })
 }
-
-// SELECT public.movie.*, public.schedule.*, public.book.*
-// FROM movie  
-// JOIN schedule ON movie.id_movie = schedule.movie_id 
-// JOIN book ON movie.id_movie = book.movie_id  
-// order BY title_movie ASC, release_date DESC;
-
-
-// JOIN schedule ON movie.id_movie = schedule.movie_id join book on movie.id_movie = book.movie_id 
-// select title_movie, release_date from public.movie order by id_movie desc
-// // SELECT public.movie.*, public.schedule.*, public.book.*
-// FROM movie  
-// JOIN schedule ON movie.id_movie = schedule.movie_id join book on movie.id_movie = book.movie_id  where title_movie = $1
 
 model.getBy = async({page,limit,orderBy,search}) =>{
     try {

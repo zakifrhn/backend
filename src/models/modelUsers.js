@@ -30,14 +30,18 @@ model.getByUser = (username) => {
     })
 }
 
-model.saveData = ({ username, pass, email }) => {
+model.saveData = ({ username, pass, email, roles }) => {
     return new Promise((resolve, reject) => {
+
+        // const queryEmail = db.query(`select email from users where email = $1`, [email])
+        // if(email === queryEmail) return respone(res, 400, 'Sorry, This email has been registred')
+        
         db.query(
             `INSERT INTO public.users
-            (username, pass, email)
-            VALUES($1, $2, $3);            
+            (username, pass, email, roles)
+            VALUES($1, $2, $3, $4);            
         `,
-            [username, pass, email]
+            [username, pass, email, roles]
         )
             .then((res) => {
                 resolve(`${res.rowCount} user created`)
@@ -48,8 +52,10 @@ model.saveData = ({ username, pass, email }) => {
     })
 }
 
-model.updateData = ({ username, password, email, userId }) => {
+
+model.updateData = ({ username, password, email, id_user }) => {
     return new Promise((resolve, reject) => {
+
         db.query(
             `UPDATE public.users SET
                 username = COALESCE(NULLIF($1, ''), username),
@@ -58,7 +64,7 @@ model.updateData = ({ username, password, email, userId }) => {
                 updated_at = now()
             WHERE username = $4           
         `,
-            [username, password, email, userId]
+            [username, password, email, id_user]
         )
             .then((res) => {
                 resolve(`${res.rowCount} user updated`)

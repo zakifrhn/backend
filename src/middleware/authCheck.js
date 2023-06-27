@@ -24,36 +24,40 @@ const authCheck = (...roles) => {
                 }
             })
 
-            console.log(decode)
+            // user_id.forEach((v) => {
+            //     if( v == decode.id_user){
+            //         isValid = true
+            //         return
+            //     }
+            // })
+
+            // const user_id =  decode.id_user
+            // console.log(user_id)
 
             if (isValid) {
                 req.user = decode.data
+                req.user_id = decode.user_id
+                console.log("test")
+                console.log(req.user)
                 return next()
-            } else {
+            } 
+            else {
                 return respone(res, 401, 'anda tidak punya akses')
             }
         })
+
+//         // const userId = token.id_user
+//         // if(req.body.id_user && req.body.id_user !== userId){
+//         //     throw 'Invalid user ID';
+//         //   } else {
+//         //     next();
+//         //     console.log(userId)
+//         //   }
     }
 }
 
-// const verifyAccesToken = (req,res, next) =>{
-//     const authHeader =  req.headers['Authorization']
-//     const token = authHeader && authHeader.split('') [1]
-//     if(!token){
-//         return (res, 401, error.message)
-//     }
-
-//     const decoded =  jwt.verifyToken(token, process.env.SECRET)
-//     if(!decoded){
-//         return respone(res, 401, 'Forbidden  ')
-//     }
-
-//     req.user = decoded
-//     next()
-// }
 
 
 
 
 module.exports = authCheck
-    // verifyAccesToken

@@ -6,9 +6,9 @@ const respone =  require('../utils/respon')
 ctrl.getData = async (req,res) => {
     try{
         const result =  await model.getAllMovie()
-        return res.status(200).json(result)
+        return respone(res, 200, result)
     }catch(error){
-        console.log(error)
+        return respone(res, 500, error.message)
     }
 }
 
@@ -20,18 +20,17 @@ ctrl.saveData = async (req,res) => {
         const result = await model.addMovie(req.body)
         return respone(res,200,result)
     } catch (error) {
-        console.log(error)
+        return respone(res, 500, error.message)
     }
 }
 
 ctrl.delData = async (req,res) =>{
     try {
-        // const { id_movie } = req.body
         const id_movie = req.params.id;
         const result = await model.deleteMovie({id_movie})
-        return res.status(200).json(result)
+        return respone(res, 200, result)
     } catch (error) {
-        console.log(error)
+        return respone(res, 500, error.message)
     }
 }
 
@@ -49,9 +48,9 @@ ctrl.editData = async(req,res) => {
             updated_at
         } = req.body
         const result = await model.editMovie({id_movie,title_movie,image_movie,synopsis_movie,updated_at})
-        return res.status(200).json(result)
+        return respone(res, 200, result)
     } catch (error) {
-        console.log(error)
+        return respone(res, 500, error.message)
     }
 }
 
@@ -60,21 +59,19 @@ ctrl.getName = async(req,res) => {
     try {
         const title_movie = req.query.title_movie
         const result = await model.getName({title_movie})
-        return res.status(200).json(result)
+        return respone(res, 200, result)
     } catch (error) {
-        console.log(error)
+        return respone(res, 500, error.message)
     }
 }
 
 
 ctrl.sortName = async(req,res) => {
     try {
-        // const title_movie = req.query.title_movie
-        // const relase_date = req.query.relase_date
         const result = await model.sortNameRelease()
-        return res.status(200).json(result)
+        return respone(res, 200, result)
     } catch (error) {
-        console.log(error)
+        return respone(res, 500, error.message)
     }
 }
 
@@ -91,7 +88,6 @@ ctrl.fetchBy = async(req,res) =>{
         const result = await model.getBy(params)
         return respone(res, 200, result)
     } catch (error) {
-        console.log(error)
         return respone(res, 500, error.message)        
     }
 }

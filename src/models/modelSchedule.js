@@ -55,16 +55,8 @@ model.editSch = ({id_schedule, location_user, price_movie, updated_at}) => {
 model.deleteSch = ({id_schedule}) =>{
     return new Promise((resolve,rejected) => {
         db.query('DELETE FROM public.schedule WHERE id_schedule = $1', [id_schedule])
-        .then(() => {
-            
-            // resolve(res.status(201).send("Data berhasil di hapus"))
-            
+        .then(() => { 
             resolve("Data Succesfully Deleted!")
-
-            // resolve(res.status(200).json({
-            //     success: true,
-            //     messaage: 'berhasil Hapus data'
-            // }))
         }).catch(() => {
             rejected("Failed to deleted the data")
         })

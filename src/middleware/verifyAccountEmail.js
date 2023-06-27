@@ -1,0 +1,7 @@
+
+
+const confirmEmail = (req, res) => {
+
+    
+
+}
