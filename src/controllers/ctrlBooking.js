@@ -1,5 +1,6 @@
 const ctrl = {}
 const model = require('../models/modelBooking')
+const modelUser = require ('../models/modelUsers')
 const respone = require('../utils/respon')
 const user = require('../models/modelUsers')
 
@@ -31,20 +32,22 @@ ctrl.fetchBy = async (req, res) => {
 
 
 ctrl.saveData = async (req,res) => {
+    const user = await modelUser.dataExists(req.user)
+    //console.log(user)
+    const idUser = user[0].id_user
+    //console.log(idUser)
+
     try {
-
-        const id_user = req.body.user_id
-        console.log(id_user)
-
-        if(id_user == undefined) return respone(res, 400, 'Sorry You Must Be Logged In')
+        if(idUser == undefined) return respone(res, 400, 'Sorry You Must Be Logged In')
 
         const {
             id_movie, seat_user, id_schedule, total_payment, id_order
         } = req.body
 
         const result = await model.addBooking({
-            id_movie, seat_user, id_schedule, total_payment, id_order, id_user
+            id_movie, seat_user, id_schedule, total_payment, id_order, idUser
         })
+        console.log(res)
         return respone(res, 200, result)
     } catch (error) {
         return respone(res, 500, error.message)

@@ -5,13 +5,13 @@ const escape =  require('pg-format')
 
 
 model.addBooking = ({
-	id_movie, seat_user, id_schedule, total_payment, id_order, id_user }) => {
+	id_movie, seat_user, id_schedule, total_payment, id_order, idUser }) => {
     return new Promise((resolve,reject) => {
         db.query (`INSERT INTO public.order_user (    
             id_movie, seat_user, id_schedule, total_payment)
         VALUES($1,$2,$3,$4)`, [id_movie, seat_user, id_schedule, total_payment])
             .then(() => {
-                return db.query(`INSERT INTO public.bridge_order_users (id_order, id_user) VALUES ($1, $2)`, [id_order, id_user]);
+                return db.query(`INSERT INTO public.bridge_order_users (id_order, id_user) VALUES ($1, $2)`, [id_order, idUser]);
             })
             .then(() => {
                 resolve('Data Successfully Added!');

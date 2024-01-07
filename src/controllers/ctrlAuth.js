@@ -3,69 +3,116 @@ const model = require('../models/modelUsers')
 const respone = require('../utils/respon')
 const bcrypt = require('bcrypt')
 const jwt = require('../utils/jwt')
+const jwtVerify = require('jsonwebtoken')
 
 ctrl.login = async (req,res) => {
-    try {
-        const passDb = await model.getByUser(req.body.username)
-        console.log(passDb)
 
-        if(passDb.length <= 0){
-            return respone(res, 401, 'username tidak terdaftar')
-        }
-
-        const passUser = req.body.pass
-        const check = await bcrypt.compare(passUser, passDb[0].pass)
-
-        if(check){
-            const token = jwt.genToken({username: req.body.username, roles: passDb[0].roles, user_id: passDb[0].id_user})
-            return respone(res,200, {
-                message: 'Token created',
-                token
-             })
-        }else if(!passDb[0].verify){
-            return respone(res, 401, 'Your email has not been verified. Please click on resend')
-        }else{
-            return respone(res, 401, 'password salah')
-        }
-    } catch (error) {
-        console.log(error)
-        return respone(res, 500, error.message)
+try {
+    const dataUser = await model.getByUser(req.body.username)
+    const passDb = await model.getByPassword(req.body.username)
+    if (!passDb) {
+        return respone(res, 401, 'username tidak terdaftar')
     }
+
+    const cekEmail = await model.readStatus(req.body.username)
+    if(cekEmail == 'false'){
+        return respone(res, 400, 'Please verification email first!')
+    }
+
+    const role = await model.getByRole(req.body.username)
+    const passUser = req.body.pass
+    const check = await bcrypt.compare(passUser, passDb)
+    if (check) {
+        const token= jwt.genToken(req.body.username, role)
+        return respone(res, 200, {
+            message: 'token created',
+            token: token.refreshToken,
+            role,
+            dataUser
+        })
+    } else {
+        return respone(res, 401, 'password salah')
+    }
+} catch (error) {
+    console.log(error)
+    return respone(res, 500, error.message)
+}
 }
 
-ctrl.verifyEmail = (req, res) => {
-    const { token } = req.params
 
-    jwt.verify(token, 'ourSecretKey', function(err, decoded) {
+
+ctrl.verifyEmail = async (req, res) => {
+    try{
+    const { token } = req.params
+    console.log(token)
+
+
+    jwtVerify.verify(token, process.env.KEY, (err, decoded)=> {
         if (err) {
             console.log(err);
-            res.send(`Email verification failed, possibly the link is invalid or expired`);
+            return res.send({status: 404, message: "verification fail"});
         }
-        else {
-            res.send("Email verifified successfully");
+        req.email= decoded
+        console.log(req.email)
+    })
+    if(req.email){
+        const params = {
+            email: req.email,
+            status: 'active'
         }
-    });
+
+        await model.updateStatus(params)
+        return res.send({
+            status: 201,
+            message: 'Verification Successs'
+        })
+    }
+    }
+    catch(error){
+        console.log(error)
+        throw error
+    }
 }
 
 
 // Route untuk pembaharuan token akses
-ctrl.refreshTokenize =  (req,res) =>{
-    const refreshToken = req.body.refreshToken
-    if(!refreshToken){
-        return respone(res, 401, 'akses tidak dikenali')
-    }
+ctrl.refreshTokenize = async (req,res) =>{
 
-    const decoded = jwt.verifyToken(refreshToken, process.env.REFRESH_TOKEN_SECRET)
-    if(!decoded){
-        return respone(res, 403, 'Forbidden')
-    }
+        //console.log(refresh)
+        const {authorization} = req.headers
+        //console.log(authorization)
+    
+        if(!authorization){
+            return respone(res, 401, 'token tidak ada')
+        }
+        try {
+        const tokenJWT = authorization.replace('Bearer ', '')
+        //console.log(tokenJWT)
+        
+            jwtVerify.verify(tokenJWT, process.env.REFRESH_TOKEN_SECRET , (err, decoded)=> {
+            if (err) {
+                console.log(err);
+                return res.send({status: 404, message: "token is empty"});
+            }
+            req.body = decoded
+        })
 
-    // Token pembaruan valid, buat token akses baru
-    const user = { username: decoded.username };
-    const accessToken = jwt.generateAccessToken(user);
+        const data = req.body
+        const username = data.username
+        console.log(data)
 
-    // Kirim token akses baru sebagai respons
-    res.json({ accessToken });
+        const role = await model.getByRole(data.data)
+        //console.log(role)
+        const token= jwt.genToken(username, role)
+        return respone(res, 200, {
+            message: 'token created',
+            token: token.refreshToken,
+            role: role
+        })
+
+        } catch (error) {
+            console.log(error)
+        }
 }
 
 module.exports = ctrl
