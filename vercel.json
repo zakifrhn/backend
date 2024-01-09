@@ -1,3 +1,5 @@
 {
-  "routes": [{ "source": "/(.*)", "destination": "/" }]
+  "routes": [{ 
+    "source": "/(.*)", 
+    "destination": "/" }]
 }
