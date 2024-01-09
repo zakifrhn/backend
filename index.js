@@ -1,10 +1,10 @@
 const express = require("express");
 const app = express();
+require("dotenv/config");
 const routers = require("./src/routers/index");
 const db = require("./src/config/db");
 const cors = require("cors");
 const cloudinary = require("cloudinary").v2;
-require("dotenv").config();
 
 app.use(cors());
 app.use(express.json());
