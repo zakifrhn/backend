@@ -19,7 +19,7 @@ db.connect()
     });
 
     app.listen(process.env.PORT, () => {
-      console.log("app running on port 5200");
+      console.log(`app running on port ` + process.env.PORT);
     });
   })
   .catch((e) => {
