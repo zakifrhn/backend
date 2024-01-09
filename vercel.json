@@ -9,7 +9,7 @@
     "routes": [
       {
         "source": "/(.*)",
-        "destination": "src/routers"
+        "destination": "/src/routers"
       }
     ]
 }
