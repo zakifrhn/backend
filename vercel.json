@@ -1,3 +1,3 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/src/routes/index/index.js" }]
+  "rewrites": [{ "source": "/(.*)", "destination": "src/routers/index.js" }]
 }
