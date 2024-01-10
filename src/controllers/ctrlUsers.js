@@ -1,3 +1,4 @@
+require("dotenv/config");
 const ctrl = {};
 const model = require("../models/modelUsers");
 const respone = require("../utils/respon");
