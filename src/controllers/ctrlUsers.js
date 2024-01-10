@@ -29,7 +29,7 @@ ctrl.save = async (req, res) => {
     const email = req.body.email;
     const roles = req.body.roles || "user";
     const activationCode = jwt.sign(email, process.env.KEY);
-    sendMail(email, activationCode, "activate");
+    await sendMail(email, activationCode, "activate");
 
     console.log(activationCode);
 

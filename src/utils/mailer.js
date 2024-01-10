@@ -9,7 +9,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const configSendMail = (email, confirmationCode, condition) => {
+const configSendMail = async (email, confirmationCode, condition) => {
   let mailOptions = {};
 
   if (condition == "activate") {
@@ -21,12 +21,16 @@ const configSendMail = (email, confirmationCode, condition) => {
     };
   }
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log("email sent", info.response);
-    }
+  await new Promise((resolve, reject) => {
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      } else {
+        console.log("email sent", info.response);
+        resolve(info);
+      }
+    });
   });
 };
 
