@@ -113,7 +113,7 @@ ctrl.updatePass = async (req, res) => {
 ctrl.delete = async (req, res) => {
   try {
     const idUser = req.params.id;
-    const result = await model.deleteData(req.idUser);
+    const result = await model.deleteData(idUser);
     return respone(res, 200, result);
   } catch (error) {
     console.log(error);
