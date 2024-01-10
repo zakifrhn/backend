@@ -31,6 +31,8 @@ ctrl.save = async (req, res) => {
     const activationCode = jwt.sign(email, process.env.KEY);
     sendMail(email, activationCode, "activate");
 
+    console.log(activationCode);
+
     const params = {
       ...req.body,
       fullname: `${req.body.firstname} ${req.body.lastname}`,
@@ -41,6 +43,7 @@ ctrl.save = async (req, res) => {
       return roles;
     }
     const result = await model.saveData(params);
+    console.log(result);
     return respone(res, 200, result);
   } catch (error) {
     console.log(error);
