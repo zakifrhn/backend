@@ -213,9 +213,9 @@ model.updateImg = ({ image_user, id_update }) => {
   });
 };
 
-model.deleteData = (username) => {
+model.deleteData = (idUser) => {
   return new Promise((resolve, reject) => {
-    db.query(`DELETE FROM public.users WHERE username = $1`, [username])
+    db.query(`DELETE FROM public.users WHERE id_user = $1`, [idUser])
       .then((res) => {
         resolve(`${res.rowCount} user deleted`);
       })
