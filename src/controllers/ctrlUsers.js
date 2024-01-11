@@ -95,6 +95,11 @@ ctrl.updatePass = async (req, res) => {
     const id_update = id[0].id_user;
 
     const coba = req.body.pass;
+    const coba1 = req.body.pass1;
+
+    if (coba == coba1) {
+      return respone(res, 400, "Maaf, password tidak sama");
+    }
 
     if (coba.length < 8) {
       return respone(res, 400, "maaf, password kurang dari 8");
