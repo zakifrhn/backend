@@ -17,7 +17,7 @@ const configSendMail = async (email, confirmationCode, condition) => {
       from: process.env.EMAIL,
       to: email,
       subject: "Activation Account",
-      text: `Open this link for account verification : http://localhost:3000/verification/${confirmationCode} `,
+      text: `Open this link for account verification : https://tickitznodejs.vercel.app/verification/${confirmationCode} `,
     };
   }
 
